@@ -1,30 +1,33 @@
 import {
-  type RefObject,
   useImperativeHandle,
   type ChangeEvent,
   useState,
-  ComponentPropsWithoutRef,
+  ComponentPropsWithRef,
+  useRef,
+  FC,
 } from "react";
 import { z } from "zod";
 
-interface Props extends ComponentPropsWithoutRef<"input"> {
-  schema?: z.ZodType<any, any>;
-  inputRef?: RefObject<HTMLInputElement>;
+interface Props<TSchema = unknown> extends ComponentPropsWithRef<"input"> {
+  schema?: z.ZodType<TSchema>;
 }
 
-interface Ref {
+export interface Ref extends HTMLInputElement {
   validate: () => boolean;
 }
 
-const DoNotUseForwardRef = ({ inputRef, schema, ...props }: Props) => {
-  /**
-   * WHY `forwardRef` WILL BE DEPRECATED?
-   */
-  useImperativeHandle<HTMLInputElement, any>(inputRef, () => ({
-    // what should we do here?
+const DoNotUseForwardRef = <TSchema = unknown,>({
+  ref,
+  schema,
+  ...props
+}: Props<TSchema>) => {
+  useImperativeHandle<HTMLInputElement, Ref>(ref, () => ({
+    validate: () => isValid,
+    ...inputRef.current!,
   }));
 
   const [isValid, setIsValid] = useState(false);
+  const inputRef = useRef<HTMLInputElement>(null);
 
   const handleInput = (event: ChangeEvent<HTMLInputElement>) => {
     if (schema) {
