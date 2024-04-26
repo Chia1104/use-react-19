@@ -3,8 +3,7 @@ import {
   type ChangeEvent,
   useState,
   ComponentPropsWithRef,
-  useRef,
-  FC,
+  useId,
 } from "react";
 import { z } from "zod";
 
@@ -12,22 +11,22 @@ interface Props<TSchema = unknown> extends ComponentPropsWithRef<"input"> {
   schema?: z.ZodType<TSchema>;
 }
 
-export interface Ref extends HTMLInputElement {
+export interface Ref extends Partial<HTMLInputElement> {
   validate: () => boolean;
 }
 
-const DoNotUseForwardRef = <TSchema = unknown,>({
+const DoNotUseForwardRef = <TSchema extends unknown>({
   ref,
   schema,
   ...props
 }: Props<TSchema>) => {
-  useImperativeHandle<HTMLInputElement, Ref>(ref, () => ({
+  useImperativeHandle<Partial<HTMLInputElement>, Ref>(ref, () => ({
     validate: () => isValid,
-    ...inputRef.current!,
+    ...ref,
   }));
 
+  const id = useId();
   const [isValid, setIsValid] = useState(false);
-  const inputRef = useRef<HTMLInputElement>(null);
 
   const handleInput = (event: ChangeEvent<HTMLInputElement>) => {
     if (schema) {
@@ -37,12 +36,16 @@ const DoNotUseForwardRef = <TSchema = unknown,>({
   };
 
   return (
-    <input
-      className="rounded-md p-1"
-      ref={inputRef}
-      type="text"
-      onChange={handleInput}
-    />
+    <>
+      <label htmlFor={id}>Do Not Use Forward Ref</label>
+      <input
+        className="rounded-md p-1"
+        id={id}
+        ref={ref}
+        type="text"
+        onChange={handleInput}
+      />
+    </>
   );
 };
 

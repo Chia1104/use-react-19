@@ -11,11 +11,12 @@ interface Pokemon {
   }[];
 }
 
-const fetchPokemon = () =>
-  ky.get("https://pokeapi.co/api/v2/pokemon/ditto").json<Pokemon>();
+const fetchPokemon = ky
+  .get("https://pokeapi.co/api/v2/pokemon/ditto")
+  .json<Pokemon>();
 
 const UsePokemon = () => {
-  const data = use(fetchPokemon());
+  const data = use(fetchPokemon);
   return (
     <div className="flex flex-col gap-2 rounded bg-gray-800 p-5">
       <p>using react use</p>

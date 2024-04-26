@@ -19,7 +19,6 @@
     "paths": {
       "@/*": ["src/*"]
     },
-    "types": ["react/experimental"]
   },
   "include": ["src"],
   "references": [{ "path": "./tsconfig.node.json" }]
