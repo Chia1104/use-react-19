@@ -1,6 +1,6 @@
-import { Suspense, useRef, use } from "react";
+import { Suspense, use, useRef } from "react";
 import UsePokemon from "./use-pokemon";
-import DoNotUseForwardRef, { Ref } from "./do-not-use-forwardref";
+import DoNotUseForwardRef, { type Ref } from "./do-not-use-forwardref";
 import "./App.css";
 import { cn } from "@/utils";
 import { ErrorBoundary } from "./error-boundary";
@@ -14,8 +14,8 @@ const Meta = () => {
 };
 
 function App() {
-  const inputRef = useRef<Ref>(null);
   const [theme, setTheme] = use(ThemeContext);
+  const inputRef = useRef<Ref>(null);
   return (
     <div className={cn("App flex flex-col items-center justify-center gap-5")}>
       <Meta />
@@ -24,10 +24,14 @@ function App() {
       <button onClick={() => setTheme("dark")}>Dark</button>
       <DoNotUseForwardRef<string>
         schema={z.string().length(3)}
-        ref={(ref) => {
-          console.log(ref);
+        // ref={inputRef}
+        ref={(node) => {
+          console.log(node?.validate());
         }}
       />
+      <button onClick={() => console.log(inputRef.current?.validate())}>
+        check input validity
+      </button>
       <ErrorBoundary>
         <Suspense fallback={<Loading />}>
           <UsePokemon />
